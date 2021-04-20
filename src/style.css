@@ -14,7 +14,7 @@
 }
 
 #counter {
-  font-size: 6rem;
+  font-size: 4rem;
 }
 
 #dots {
@@ -35,7 +35,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 .active {
   background-color: red;
