@@ -1,7 +1,12 @@
+body, html {
+  margin: 0;
+}
+
 #app {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 100%;
   transform: translate3d(-50%, -50%, 0);
   text-align: center;
   text-align: center;
@@ -11,6 +16,7 @@
 }
 #timer {
   font-size: 16rem;
+  text-align: center;
 }
 
 #counter {
@@ -19,9 +25,10 @@
 
 #dots {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
+  margin: auto;
   margin-top: 40px;
+  width: 1650px;
 }
 
 .dot {
@@ -39,4 +46,42 @@
 }
 .active {
   background-color: red;
+}
+/* for iPad Pro */
+@media (max-width: 1670px) {
+  #timer {
+    font-size: 8rem;
+  }
+  #counter {
+    font-size: 2rem;
+  }
+  #dots {
+    width: 1200px;
+  }
+  .dot {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  #timer {
+    font-size: 6rem;
+    line-height: 100%;
+  }
+  #counter {
+    line-height: 100%;
+  }
+  #dots {
+    width: 975px;
+    margin-top: 20px;
+  }
+  .dot {
+    width: 55px;
+    height: 55px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+  }
 }
