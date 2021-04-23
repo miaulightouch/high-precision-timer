@@ -47,6 +47,14 @@ body, html {
 .active {
   background-color: red;
 }
+
+.text-yellow {
+  color: orange;
+}
+.text-green {
+  color: green;
+}
+
 /* for iPad Pro */
 @media (max-width: 1670px) {
   #timer {

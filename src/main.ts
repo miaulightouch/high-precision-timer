@@ -1,29 +1,65 @@
+import { add, sub, div } from './calc';
 import './style.css'
 
 const timer = document.querySelector<HTMLDivElement>('#timer')!
 const fps = document.querySelector<HTMLSpanElement>('#fps')!
 const dots = document.querySelector<HTMLDivElement>('#dots')!
 
+const INIT_SAMPLES = 120;
+const SAMPLES = 360;
+
 const times: number[] = [];
-let preTime = performance.now() | 0;
+let sum = 0;
+
+/**
+ * Arithmetic mean
+ * @param ms
+ * @returns
+ */
+const amean = (ms: number) => {
+  times.push(ms);
+  sum = add(sum, ms);
+  if (times.length > SAMPLES) {
+    const removed = times.splice(0, times.length - SAMPLES);
+    sum -= removed.reduce(add, 0);
+  }
+
+  return div(sum, times.length);
+}
+
+/**
+ * Geometric mean
+ * @param ms
+ * @returns
+ */
+const gmean = (ms: number) => {
+  const log = Math.log(ms);
+  const result = amean(log);
+  return Math.exp(result);
+};
+
+const mean = gmean;
+
+let preTime = performance.now();
 let dotCount = 0;
-const handler = () => {
-  requestAnimationFrame(handler);
-  const pTtime = performance.now() | 0;
-  times.push(pTtime - preTime);
-  preTime = pTtime;
-  if (times.length <= 100) return;
-  times.splice(0, times.length - 100);
-  // const average = times.reduce((p, c) => p + c) / times.length; // Arithmetic mean
-  const average = Math.exp(times.reduce((p, c) => p + Math.log(c), 0) / times.length); // Geometric mean
-  const framerate = 1000 / average;
+const mainHandler = () => {
+  requestAnimationFrame(mainHandler);
+  if (times.length !== SAMPLES) {
+    if (!fps.classList.contains('text-yellow')) fps.classList.add('text-yellow');
+  } else {
+    if (!fps.classList.contains('text-green')) fps.classList.add('text-green');
+  }
+  const pTime = performance.now();
+  const average = mean(sub(pTime, preTime));
+  preTime = pTime;
+  const framerate = div(1000, average);
   fps.innerHTML = `${framerate.toFixed(3)} fps`;
 
   const totalDots = Math.round(framerate);
   if (dots.children.length !== totalDots) {
     if (dots.children.length > totalDots) {
       for (let index = totalDots; index <= dots.children.length; index++) {
-        dots.removeChild(dots.children[index]);
+        if (dots.children[index]) dots.removeChild(dots.children[index]);
       }
     } else {
       for (let index = dots.children.length; index <= totalDots; index++) {
@@ -46,5 +82,12 @@ const handler = () => {
   dotCount += 1;
   if (dotCount > totalDots) dotCount = 0;
   document.querySelector(`.dot-${dotCount}`)?.classList.add('active');
-}
-requestAnimationFrame(handler);
+};
+const prepareHandler = () => {
+  requestAnimationFrame(times.length <= INIT_SAMPLES ? prepareHandler : mainHandler);
+  const time = performance.now();
+  mean(sub(time, preTime));
+  preTime = time;
+};
+
+requestAnimationFrame(prepareHandler);
