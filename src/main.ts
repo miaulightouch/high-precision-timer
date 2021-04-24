@@ -1,5 +1,10 @@
+import MobileDetect from 'mobile-detect';
+
 import { add, sub, div } from './calc';
 import './style.css'
+
+const md = new MobileDetect(navigator.userAgent);
+const isMobile = md.mobile();
 
 const timer = document.querySelector<HTMLDivElement>('#timer')!
 const fps = document.querySelector<HTMLSpanElement>('#fps')!
@@ -99,3 +104,18 @@ const prepareHandler = () => {
 };
 
 requestAnimationFrame(prepareHandler);
+
+const dotPerLine = isMobile ? 10 : 15;
+window.addEventListener('resize', () => {
+  const baseWidth = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
+  const itemWidth = baseWidth / dotPerLine;
+  const margin = itemWidth / 5;
+  document.documentElement.style.setProperty('--timer-font-size', `${baseWidth / 7}px`);
+  document.documentElement.style.setProperty('--counter-font-size', `${baseWidth / 8}px`);
+  document.documentElement.style.setProperty('--dots-width', `${baseWidth}px`);
+  document.documentElement.style.setProperty('--dots-margin-left', `${(window.innerWidth - baseWidth + margin) / 2}px`);
+  document.documentElement.style.setProperty('--dot-width', `${margin * 4}px`);
+  document.documentElement.style.setProperty('--dot-font-size', `${margin * 2}px`);
+  document.documentElement.style.setProperty('--dot-margin', `${margin}px`);
+});
+window.dispatchEvent(new Event('resize'));
