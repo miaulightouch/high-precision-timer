@@ -110,8 +110,8 @@ window.addEventListener('resize', () => {
   const baseWidth = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
   const itemWidth = baseWidth / dotPerLine;
   const margin = itemWidth / 5;
-  document.documentElement.style.setProperty('--timer-font-size', `${baseWidth / 7}px`);
-  document.documentElement.style.setProperty('--counter-font-size', `${baseWidth / 8}px`);
+  document.documentElement.style.setProperty('--timer-font-size', `${baseWidth / 8}px`);
+  document.documentElement.style.setProperty('--counter-font-size', `${baseWidth / 14}px`);
   document.documentElement.style.setProperty('--dots-width', `${baseWidth}px`);
   document.documentElement.style.setProperty('--dots-margin-left', `${(window.innerWidth - baseWidth + margin) / 2}px`);
   document.documentElement.style.setProperty('--dot-width', `${margin * 4}px`);
