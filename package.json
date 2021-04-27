@@ -4,12 +4,11 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "serve": "vite preview"
   },
   "devDependencies": {
-    "typescript": "^4.2.3",
-    "vite": "^2.1.5"
+    "vite": "^2.2.3"
   },
   "dependencies": {
     "mobile-detect": "^1.4.5"

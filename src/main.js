@@ -1,16 +1,14 @@
-type MessageStruct = { framerate: number, timestamp: string };
-
 import MobileDetect from 'mobile-detect';
 
 import Worker from './worker?worker';
-import './style.css'
+import './assets/style.css';
 
 const md = new MobileDetect(navigator.userAgent);
 const isMobile = md.mobile();
 
-const timer = document.querySelector<HTMLDivElement>('#timer')!
-const fps = document.querySelector<HTMLSpanElement>('#fps')!
-const dots = document.querySelector<HTMLDivElement>('#dots')!
+const timer = document.querySelector('#timer');
+const fps = document.querySelector('#fps');
+const dots = document.querySelector('#dots');
 let dotCount = 0;
 
 const SAMPLES = 360;
@@ -23,9 +21,9 @@ for (let index = 0; index < MAX_FPS; index++) {
   dots.appendChild(dot);
 }
 
-const data: MessageStruct[] = []
+const data = []
 
-const handler = (m: MessageStruct) => {
+const handler = (m) => {
   data.push(m);
   const { framerate, timestamp } = m;
   timer.innerText = timestamp;
@@ -59,11 +57,11 @@ const handler = (m: MessageStruct) => {
 (async () => {
   if ('Worker' in window) {
     const worker = new Worker();
-    worker.onmessage = (e: MessageEvent<MessageStruct>) => handler(e.data);
+    worker.onmessage = (e) => handler(e.data);
   } else {
     const worker = await import('./worker');
     worker.default.setSender(
-      (framerate: number, timestamp: string) => handler({ framerate, timestamp }),
+      (framerate, timestamp) => handler({ framerate, timestamp }),
     )
   }
 })();

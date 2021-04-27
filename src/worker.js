@@ -1,5 +1,3 @@
-declare var self: DedicatedWorkerGlobalScope;
-
 import { add, sub, div } from './calc';
 
 const INIT_SAMPLES = 120;
@@ -11,11 +9,11 @@ export class Timer {
     self.requestAnimationFrame(() => this.prepare());
   }
 
-  mean: (ms: number) => number;
+  mean = (ms = 0) => ms;
 
   sum = 0;
 
-  times: number[] = [];
+  times = [];
 
   preTime = performance.now();
 
@@ -24,7 +22,7 @@ export class Timer {
    * @param ms
    * @returns
    */
-  amean(ms: number) {
+  amean(ms = 0) {
     this.times.push(ms);
     this.sum = add(this.sum, ms);
     if (this.times.length > SAMPLES) {
@@ -40,7 +38,7 @@ export class Timer {
    * @param ms
    * @returns
    */
-  gmean (ms: number) {
+  gmean (ms = 0) {
     const log = Math.log(ms);
     const result = this.amean(log);
     return Math.exp(result);
@@ -79,11 +77,11 @@ export class Timer {
     this.send(framerate, `${hour}:${minute}:${second}.${ms}`);
   }
 
-  send(framerate: number, timestamp: string) {
+  send(framerate = 0, timestamp = '') {
     self.postMessage({ framerate, timestamp })
   }
 
-  setSender(callback: (framerate: number, timestamp: string) => void) {
+  setSender(callback) {
     this.send = callback;
   }
 }
