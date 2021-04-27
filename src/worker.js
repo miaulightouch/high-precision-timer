@@ -3,10 +3,21 @@ import { add, sub, div } from './calc';
 const INIT_SAMPLES = 120;
 const SAMPLES = 720;
 
+let { requestAnimationFrame } = self;
 export class Timer {
   constructor() {
     this.mean = this.gmean;
-    self.requestAnimationFrame(() => this.prepare());
+    if (typeof requestAnimationFrame !== 'function') {
+      let callback = () => {};
+      onmessage = (e) => typeof e.data === 'number' && callback(e.data);
+
+      requestAnimationFrame = (func) => { if (callback !== func) callback = func; }
+
+      postMessage('raf polyfill');
+    } else {
+      postMessage('finish');
+    }
+    requestAnimationFrame((ms) => this.prepare(ms))
   }
 
   mean = (ms = 0) => ms;
@@ -44,25 +55,22 @@ export class Timer {
     return Math.exp(result);
   };
 
-  prepare() {
-    self.requestAnimationFrame(() => {
+  prepare(time) {
+    requestAnimationFrame((input) => {
       if (this.times.length <= INIT_SAMPLES) {
-        this.prepare();
+        this.prepare(input);
       } else {
         this.times.length = 0;
         this.sum = 0;
-        this.handler();
+        this.handler(input);
       }
-    },
-    );
-    const time = performance.now();
+    });
     this.mean(sub(time, this.preTime));
     this.preTime = time;
   }
 
-  handler() {
-    self.requestAnimationFrame(() => this.handler());
-    const time = performance.now();
+  handler(time) {
+    requestAnimationFrame((input) => this.handler(input));
     const average = this.mean(sub(time, this.preTime));
     this.preTime = time;
 
@@ -78,7 +86,7 @@ export class Timer {
   }
 
   send(framerate = 0, timestamp = '') {
-    self.postMessage({ framerate, timestamp })
+    postMessage({ framerate, timestamp })
   }
 
   setSender(callback) {

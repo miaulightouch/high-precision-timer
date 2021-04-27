@@ -21,18 +21,14 @@ for (let index = 0; index < MAX_FPS; index++) {
   dots.appendChild(dot);
 }
 
-const data = []
+let count = 0
 
 const handler = (m) => {
-  data.push(m);
+  count += 1;
   const { framerate, timestamp } = m;
   timer.innerText = timestamp;
   fps.innerText = `${framerate.toFixed(3)} fps`;
-  if (data.length !== SAMPLES) {
-    if (!fps.classList.contains('text-yellow')) fps.classList.add('text-yellow');
-  } else {
-    if (!fps.classList.contains('text-green')) fps.classList.add('text-green');
-  }
+  if (count === SAMPLES) fps.classList.add('text-green');
 
   const totalDots = Math.round(framerate);
   const enabledDots = document.querySelectorAll(".dot.enabled");
@@ -55,9 +51,19 @@ const handler = (m) => {
 }
 
 (async () => {
-  if ('Worker' in window) {
+  // iOS didn't support module worker
+  if ('Worker' in window && md.os() !== 'iOS') {
     const worker = new Worker();
-    worker.onmessage = (e) => handler(e.data);
+    worker.onmessage = (e) => {
+      if (e.data !== 'finish') {
+        const callback = (ms) => {
+          requestAnimationFrame(callback);
+          worker.postMessage(ms);
+        }
+        requestAnimationFrame(callback);
+      }
+      worker.onmessage = (ev) => handler(ev.data);
+    }
   } else {
     const worker = await import('./worker');
     worker.default.setSender(
